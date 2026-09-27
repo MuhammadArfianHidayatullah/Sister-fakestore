@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Sister FakeStore - Toko Online
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #111827;
+            color: white;
+
+            padding:
+                18px 8%;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+
+            margin-left: 20px;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 84%;
+            max-width: 1200px;
+
+            margin: 40px auto;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .hero {
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            margin-bottom: 30px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.06);
+        }
+
+        .hero h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           FLASH MESSAGE
+        ========================= */
+
+        .alert {
+            padding: 15px 18px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* =========================
+           SERVER STATUS
+        ========================= */
+
+        .status-container {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0, 0, 0, 0.05);
+        }
+
+        .status-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .active {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        /* =========================
+           PRODUCT GRID
+        ========================= */
+
+        .section-title {
+            margin-bottom: 20px;
+        }
+
+        .products {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(250px, 1fr));
+
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.07);
+
+            transition:
+                transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform:
+                translateY(-3px);
+        }
+
+        .product-icon {
+            width: 70px;
+            height: 70px;
+
+            background: #eef2ff;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+
+            margin-bottom: 18px;
+        }
+
+        .product-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .price {
+            color: #2563eb;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+        }
+
+        .stock {
+            color: #6b7280;
+
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .buy-form {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .quantity {
+            width: 70px;
+
+            padding: 10px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 6px;
+        }
+
+        .btn {
+            border: none;
+
+            border-radius: 6px;
+
+            padding:
+                10px 15px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .btn-buy {
+            background: #2563eb;
+            color: white;
+
+            flex: 1;
+        }
+
+        .btn-buy:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-stock {
+            background: #e5e7eb;
+            color: #111827;
+
+            margin-top: 10px;
+
+            width: 100%;
+        }
+
+        .btn-stock:hover {
+            background: #d1d5db;
+        }
+
+        /* =========================
+           EMPTY PRODUCT
+        ========================= */
+
+        .empty {
+            background: white;
+
+            padding: 40px;
+
+            text-align: center;
+
+            border-radius: 10px;
+
+            color: #6b7280;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            margin-top: 50px;
+
+            padding: 25px;
+
+            background: #111827;
+
+            color: #9ca3af;
+
+            text-align: center;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                flex-direction: column;
+
+                gap: 15px;
+            }
+
+            .navbar a {
+                margin-left: 10px;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .status-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h2 {
+                font-size: 24px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<nav class="navbar">
+
+    <h1>
+        🛒 Sister FakeStore
+    </h1>
+
+    <div>
+
+        <a href="/">
+            Produk
+        </a>
+
+        <a href="/status">
+            Status Server
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="container">
+
+
+    <!-- =====================================
+         HERO
+    ====================================== -->
+
+    <section class="hero">
+
+        <h2>
+            Toko Online
+        </h2>
+
+        <p>
+            Sistem toko online sederhana
+            menggunakan sistem terdistribusi
+            dengan komunikasi RPC, RMI,
+            dan REST API.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================
+         FLASH MESSAGE
+    ====================================== -->
+
+    {% with messages = get_flashed_messages(
+        with_categories=true
+    ) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div
+                    class="alert
+                    {% if category == 'success' %}
+                        alert-success
+                    {% else %}
+                        alert-error
+                    {% endif %}"
+                >
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- =====================================
+         STATUS SERVER
+    ====================================== -->
+
+    {% if server_status %}
+
+    <h2 class="section-title">
+        Status Server
+    </h2>
+
+    <section class="status-container">
+
+
+        <div class="status-card">
+
+            <h3>
+                Server 1
+            </h3>
+
+            <p>
+                RPC Server
+                <br>
+                Port: 6001
+            </p>
+
+            <br>
+
+            <span
+                class="
+                {% if server_status.server1 == 'Aktif' %}
+                    active
+                {% else %}
+                    inactive
+                {% endif %}
+                "
+            >
+
+                {{ server_status.server1 }}
+
+            </span>
+
+        </div>
+
+
+        <div class="status-card">
+
+            <h3>
+                Server 2
+            </h3>
+
+            <p>
+                RMI Server
+                <br>
+                Port: 6002
+            </p>
+
+            <br>
+
+            <span
+                class="
+                {% if server_status.server2 == 'Aktif' %}
+                    active
+                {% else %}
+                    inactive
+                {% endif %}
+                "
+            >
+
+                {{ server_status.server2 }}
+
+            </span>
+
+        </div>
+
+
+        <div class="status-card">
+
+            <h3>
+                Server 3
+            </h3>
+
+            <p>
+                REST API Server
+                <br>
+                Port: 6003
+            </p>
+
+            <br>
+
+            <span
+                class="
+                {% if server_status.server3 == 'Aktif' %}
+                    active
+                {% else %}
+                    inactive
+                {% endif %}
+                "
+            >
+
+                {{ server_status.server3 }}
+
+            </span>
+
+        </div>
+
+
+    </section>
+
+    {% endif %}
+
+
+    <!-- =====================================
+         DAFTAR PRODUK
+    ====================================== -->
+
+    <h2 class="section-title">
+        Daftar Produk
+    </h2>
+
+
+    {% if products %}
+
+        <section class="products">
+
+
+            {% for product in products %}
+
+            <article class="product-card">
+
+
+                <!-- ICON -->
+
+                <div class="product-icon">
+                    🛍️
+                </div>
+
+
+                <!-- NAMA PRODUK -->
+
+                <h3>
+
+                    {{ product.get(
+                        "name",
+                        "Produk"
+                    ) }}
+
+                </h3>
+
+
+                <!-- HARGA -->
+
+                <p class="price">
+
+                    Rp
+
+                    {{
+                        "{:,.0f}".format(
+                            product.get(
+                                "price",
+                                0
+                            )
+                        ).replace(
+                            ",",
+                            "."
+                        )
+                    }}
+
+                </p>
+
+
+                <!-- STOK -->
+
+                <p class="stock">
+
+                    Stok:
+
+                    <strong>
+
+                        {{ product.get(
+                            "stock",
+                            0
+                        ) }}
+
+                    </strong>
+
+                </p>
+
+
+                <!-- FORM PEMBELIAN -->
+
+                <form
+                    action="/buy"
+                    method="POST"
+                    class="buy-form"
+                >
+
+                    <input
+                        type="hidden"
+                        name="product_id"
+                        value="{{ product.get('id') }}"
+                    >
+
+
+                    <input
+                        type="number"
+                        name="quantity"
+                        value="1"
+                        min="1"
+                        class="quantity"
+                        required
+                    >
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-buy"
+                    >
+                        Beli
+                    </button>
+
+                </form>
+
+
+                <!-- CEK STOK -->
+
+                <a
+                    href="/stock/{{ product.get('id') }}"
+                    style="text-decoration:none;"
+                >
+
+                    <button
+                        type="button"
+                        class="btn btn-stock"
+                    >
+                        Cek Stok
+                    </button>
+
+                </a>
+
+
+            </article>
+
+            {% endfor %}
+
+
+        </section>
+
+
+    {% else %}
+
+        <div class="empty">
+
+            <h3>
+                Data produk belum tersedia
+            </h3>
+
+            <br>
+
+            <p>
+                Pastikan Server 4,
+                Server 3, dan koneksi jaringan
+                sudah berjalan.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</main>
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer>
+
+    <p>
+        Sister FakeStore
+        &copy; 2026
+    </p>
+
+    <p>
+        Sistem Terdistribusi —
+        Universitas Trunojoyo Madura
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
