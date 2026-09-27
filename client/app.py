@@ -6,11 +6,12 @@ import pickle
 app = Flask(__name__)
 app.secret_key = "sister-fakestore-client"
 
+
 # ============================================================
 # KONFIGURASI SERVER
 # ============================================================
 
-# Ganti 192.168.x.x dengan IP masing-masing laptop
+# Ganti dengan IP laptop masing-masing server
 
 # Server 1 - RPC
 RPC_SERVER_HOST = "192.168.x.x"
@@ -48,6 +49,7 @@ def send_pickle_request(host, port, data):
 
         client_socket.settimeout(5)
 
+        # Connect ke server
         client_socket.connect((host, port))
 
         # Serialize data menggunakan pickle
@@ -55,6 +57,12 @@ def send_pickle_request(host, port, data):
 
         # Kirim data
         client_socket.sendall(message)
+
+        # Penting:
+        # Server 1 dan Server 2 membaca data sampai EOF.
+        # Karena itu client harus memberi tanda bahwa
+        # pengiriman request sudah selesai.
+        client_socket.shutdown(socket.SHUT_WR)
 
         # Menerima response
         response_data = b""
@@ -67,13 +75,6 @@ def send_pickle_request(host, port, data):
                     break
 
                 response_data += chunk
-
-                # Jika data sudah lengkap, coba deserialize
-                try:
-                    response = pickle.loads(response_data)
-                    break
-                except Exception:
-                    continue
 
             except socket.timeout:
                 break
@@ -156,14 +157,16 @@ def buy_product(product_id, quantity):
     """
     Meminta Server 1 melakukan transaksi pembelian.
 
-    Server 1:
+    Alur:
     Client -> Server 1 -> Server 4
     """
 
     request_data = {
         "method": "buy",
-        "product_id": product_id,
-        "quantity": quantity
+        "params": {
+            "product_id": int(product_id),
+            "qty": int(quantity)
+        }
     }
 
     return send_pickle_request(
@@ -180,11 +183,17 @@ def buy_product(product_id, quantity):
 def check_stock(product_id):
     """
     Meminta Server 2 mengecek stok produk.
+
+    Alur:
+    Client -> Server 2 -> Server 4
     """
 
     request_data = {
-        "method": "check_stock",
-        "product_id": product_id
+        "object": "StockService",
+        "method": "get_stock",
+        "params": {
+            "product_id": int(product_id)
+        }
     }
 
     return send_pickle_request(
@@ -197,12 +206,18 @@ def check_stock(product_id):
 def update_stock(product_id, quantity):
     """
     Meminta Server 2 melakukan update stok.
+
+    quantity positif  = tambah stok
+    quantity negatif  = kurangi stok
     """
 
     request_data = {
+        "object": "StockService",
         "method": "update_stock",
-        "product_id": product_id,
-        "quantity": quantity
+        "params": {
+            "product_id": int(product_id),
+            "qty": int(quantity)
+        }
     }
 
     return send_pickle_request(
@@ -236,15 +251,31 @@ def stock(product_id):
 
     result = check_stock(product_id)
 
-    if result.get("success"):
+    # Server 2 get_stock mengembalikan:
+    # {
+    #     "product_id": ...,
+    #     "name": ...,
+    #     "stock": ...
+    # }
+    #
+    # Jika gagal:
+    # {
+    #     "error": "..."
+    # }
+
+    if "error" not in result:
+
         flash(
-            f"Stok produk: {result.get('stock', 0)}",
+            f"Stok {result.get('name', 'produk')}: "
+            f"{result.get('stock', 0)}",
             "success"
         )
+
     else:
+
         flash(
             result.get(
-                "message",
+                "error",
                 "Gagal mengecek stok."
             ),
             "error"
@@ -265,6 +296,7 @@ def buy():
 
     # Validasi product ID
     if not product_id:
+
         flash(
             "Produk tidak ditemukan.",
             "error"
@@ -274,12 +306,14 @@ def buy():
 
     # Validasi jumlah
     try:
+
         quantity = int(quantity)
 
         if quantity <= 0:
             raise ValueError
 
     except (ValueError, TypeError):
+
         flash(
             "Jumlah pembelian harus berupa angka lebih dari 0.",
             "error"
@@ -331,6 +365,7 @@ def update_stock_route():
     quantity = request.form.get("quantity")
 
     if not product_id:
+
         flash(
             "Produk tidak ditemukan.",
             "error"
@@ -339,9 +374,11 @@ def update_stock_route():
         return redirect(url_for("index"))
 
     try:
+
         quantity = int(quantity)
 
     except (ValueError, TypeError):
+
         flash(
             "Jumlah stok harus berupa angka.",
             "error"
@@ -369,7 +406,10 @@ def update_stock_route():
         flash(
             result.get(
                 "message",
-                "Gagal memperbarui stok."
+                result.get(
+                    "error",
+                    "Gagal memperbarui stok."
+                )
             ),
             "error"
         )
@@ -403,12 +443,13 @@ def status():
 
         if response.status_code == 200:
             server_status["server3"] = "Aktif"
-
         else:
             server_status["server3"] = "Error"
 
     except Exception:
+
         server_status["server3"] = "Tidak terhubung"
+
 
     # ----------------------------
     # Cek Server 1
@@ -435,7 +476,9 @@ def status():
         server_status["server1"] = "Aktif"
 
     except Exception:
+
         server_status["server1"] = "Tidak terhubung"
+
 
     # ----------------------------
     # Cek Server 2
@@ -462,7 +505,9 @@ def status():
         server_status["server2"] = "Aktif"
 
     except Exception:
+
         server_status["server2"] = "Tidak terhubung"
+
 
     return render_template(
         "index.html",
